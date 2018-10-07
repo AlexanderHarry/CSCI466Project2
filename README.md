@@ -1,6 +1,2 @@
-# CSCI_466_Programming_Assignments
-Programming Assignments for the CSCI 466: Networks course at Montana State University
-
-Please choose a branch corresponding to a programming assignment.
-# CSCI466Project2
-# CSCI466Project2
+DUE 10/15/2018
+https://github.com/msu-netlab/CSCI_466_Programming_Assignments/tree/rdt#csci-466-pa2---reliable-data-transmission-rdt
