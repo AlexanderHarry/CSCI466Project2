@@ -140,7 +140,7 @@ class RDT:
                 #if corrupt NAK
                 NAK_packet = Packet(self.seq_num, "0")
                 self.network.udt_send(NAK_packet.get_byte_S())
-                self.byte_buffer = ''
+                self.byte_buffer[length:]
             else:
                 # if not corrupt:
                 # if the seq_num is <= to our current seq_num
@@ -148,7 +148,7 @@ class RDT:
                     # if duplicate NAK and wait for resond
                     NAK_packet = Packet(self.seq_num, "0")
                     self.network.udt_send(NAK_packet.get_byte_S())
-                    self.byte_buffer = ''
+                    self.byte_buffer[length:]
                 elif self.seq_num < p.seq_num:
                     # new packet, ACK and return
                     # ACK
