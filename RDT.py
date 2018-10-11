@@ -100,7 +100,6 @@ class RDT:
             # while response is ''
             while response == '':
                 response = self.network.udt_receive()
-
             # length of response
             m_length = int(response[:Packet.length_S_length])
             self.byte_buffer = response[m_length:]  # going through the messege to get byte buffer
@@ -125,31 +124,33 @@ class RDT:
         byte_S = self.network.udt_receive()
         self.byte_buffer += byte_S
 
+
         while True:
 
             if (len(self.byte_buffer) < Packet.length_S_length):
                 return ret_S  # not enough bytes to read packet length
                 # extract length of packet
             length = int(self.byte_buffer[:Packet.length_S_length])
+
             if len(self.byte_buffer) < length:
                 return ret_S  # not enough bytes to read the whole packet
             # create packet from buffer content and add to return string
             p = Packet.from_byte_S(self.byte_buffer[0:length])
 
-            if Packet.corrupt(p[:length]):
+            if Packet.corrupt(self.byte_buffer):
                 #if corrupt NAK
                 NAK_packet = Packet(self.seq_num, "0")
                 self.network.udt_send(NAK_packet.get_byte_S())
-                self.byte_buffer[length:]
+                self.byte_buffer = self.byte_buffer[length:]
             else:
                 # if not corrupt:
                 # if the seq_num is <= to our current seq_num
-                if self.seq_num >= p.seq_num:
+                if p.seq_num < self.seq_num:
                     # if duplicate NAK and wait for resond
                     NAK_packet = Packet(self.seq_num, "0")
                     self.network.udt_send(NAK_packet.get_byte_S())
-                    self.byte_buffer[length:]
-                elif self.seq_num < p.seq_num:
+                    self.byte_buffer = self.byte_buffer[length:]
+                elif self.seq_num <= p.seq_num:
                     # new packet, ACK and return
                     # ACK
                     ACK_packet = Packet(self.seq_num, "1")
