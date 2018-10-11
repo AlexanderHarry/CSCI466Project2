@@ -106,7 +106,7 @@ class RDT:
 
             if Packet.corrupt(response[:m_length]):
                 self.byte_buffer = ''
-            elif not (Packet.corrupt(response[:m_length])):
+            if not (Packet.corrupt(response[:m_length])):
                 # check if we have a messege of '1' for ack and '0' for nak
                 rep_packet = Packet.from_byte_S(response[:m_length])
 
@@ -123,10 +123,7 @@ class RDT:
         ret_S = None
         byte_S = self.network.udt_receive()
         self.byte_buffer += byte_S
-
-
         while True:
-
             if (len(self.byte_buffer) < Packet.length_S_length):
                 return ret_S  # not enough bytes to read packet length
                 # extract length of packet
@@ -134,16 +131,16 @@ class RDT:
 
             if len(self.byte_buffer) < length:
                 return ret_S  # not enough bytes to read the whole packet
-            # create packet from buffer content and add to return string
-            p = Packet.from_byte_S(self.byte_buffer[0:length])
 
             if Packet.corrupt(self.byte_buffer):
-                #if corrupt NAK
-                NAK_packet = Packet(self.seq_num, "0")
+                # if corrupt NAK
+                NAK_packet = Packet(self.seq_num,"0")
                 self.network.udt_send(NAK_packet.get_byte_S())
                 self.byte_buffer = self.byte_buffer[length:]
             else:
                 # if not corrupt:
+                # create packet from buffer content and add to return string
+                p = Packet.from_byte_S(self.byte_buffer[0:length])
                 # if the seq_num is <= to our current seq_num
                 if p.seq_num < self.seq_num:
                     # if duplicate NAK and wait for resond
@@ -162,7 +159,10 @@ class RDT:
                     self.byte_buffer = self.byte_buffer[length:]
                     self.seq_num += 1
 
-
+            # clearing byte buffer
+            self.byte_buffer = self.byte_buffer[length:]
+        # returning the resp string
+        return ret_S
         # ret_S = p.msg_S if (ret_S is None) else ret_S + p.msg_S
         # remove the packet bytes from the buffer
         # self.byte_buffer = self.byte_buffer[length:]
