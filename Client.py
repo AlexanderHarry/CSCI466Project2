@@ -22,7 +22,7 @@ if __name__ == '__main__':
     for msg_S in msg_L:
         print('Converting: ' + msg_S)
         # rdt.rdt_2_1_send(msg_S)
-        msg_S = rdt.rdt_1_0_send(msg_S)
+        msg_S = rdt.rdt_3_0_send(msg_S)
 
         # try to receive message before timeout
         msg_S = None
